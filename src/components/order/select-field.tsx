@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,6 +25,7 @@ interface SelectFieldProps {
   value: number | null;
   onChange: (id: number | null) => void;
   required?: boolean;
+  icon?: ReactNode;
 }
 
 export function SelectField({
@@ -35,16 +37,18 @@ export function SelectField({
   value,
   onChange,
   required,
+  icon,
 }: SelectFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-[12px] font-medium text-muted-foreground">
+        {icon ? <span className="text-muted-foreground/80">{icon}</span> : null}
         {label}
         {required ? <span className="text-destructive ml-0.5">*</span> : null}
       </Label>
 
       {loading ? (
-        <div className="flex h-9 items-center gap-2 rounded-lg border border-input px-3 text-sm text-muted-foreground">
+        <div className="flex h-10 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
           <span>Загрузка...</span>
         </div>
@@ -56,7 +60,7 @@ export function SelectField({
             onChange(Number.isFinite(n) && n > 0 ? n : null);
           }}
         >
-          <SelectTrigger id={id} size="default" className="w-full">
+          <SelectTrigger id={id} size="default" className="w-full h-10 bg-background">
             <SelectValue placeholder={placeholder}>
               {(v) => {
                 if (!v) return placeholder;
