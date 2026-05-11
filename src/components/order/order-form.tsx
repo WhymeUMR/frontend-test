@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Building2,
+  Package,
+  Receipt,
+  ShoppingBag,
+  User,
+  Warehouse,
+} from "lucide-react";
 
 import type { Contragent, CreateSalePayload } from "@/lib/api-types";
 import { api } from "@/lib/api";
@@ -16,8 +24,8 @@ import { useCart } from "@/hooks/use-cart";
 import { ContragentField } from "./contragent-field";
 import { NomenclaturePicker } from "./nomenclature-picker";
 import { OrderSummary } from "./order-summary";
+import { SectionCard } from "./section-card";
 import { SelectField } from "./select-field";
-import { Separator } from "@/components/ui/separator";
 
 export function OrderForm() {
   const { token } = useToken();
@@ -92,67 +100,88 @@ export function OrderForm() {
 
   return (
     <>
-      <form className="flex flex-col gap-5 pb-36">
-        <ContragentField
-          token={token}
-          value={contragent}
-          onChange={setContragent}
-        />
+      <form className="flex flex-col gap-4 pb-40">
+        <SectionCard
+          step={1}
+          icon={<User className="size-4" />}
+          title="Клиент"
+          description="Поиск контрагента по телефону"
+        >
+          <ContragentField
+            token={token}
+            value={contragent}
+            onChange={setContragent}
+          />
+        </SectionCard>
 
-        <Separator />
+        <SectionCard
+          step={2}
+          icon={<Building2 className="size-4" />}
+          title="Параметры продажи"
+          description="Организация, склад, счёт и тип цен"
+        >
+          <SelectField
+            id="organization"
+            label="Организация"
+            icon={<Building2 className="size-3.5" />}
+            placeholder="Выберите организацию"
+            options={orgsQuery.data}
+            loading={orgsQuery.isLoading}
+            value={organizationId}
+            onChange={setOrganizationId}
+            required
+          />
 
-        <SelectField
-          id="organization"
-          label="Организация"
-          placeholder="Выберите организацию"
-          options={orgsQuery.data}
-          loading={orgsQuery.isLoading}
-          value={organizationId}
-          onChange={setOrganizationId}
-          required
-        />
+          <SelectField
+            id="warehouse"
+            label="Склад"
+            icon={<Warehouse className="size-3.5" />}
+            placeholder="Выберите склад"
+            options={warehousesQuery.data}
+            loading={warehousesQuery.isLoading}
+            value={warehouseId}
+            onChange={setWarehouseId}
+          />
 
-        <SelectField
-          id="warehouse"
-          label="Склад"
-          placeholder="Выберите склад"
-          options={warehousesQuery.data}
-          loading={warehousesQuery.isLoading}
-          value={warehouseId}
-          onChange={setWarehouseId}
-        />
+          <SelectField
+            id="paybox"
+            label="Счёт"
+            icon={<Receipt className="size-3.5" />}
+            placeholder="Выберите счёт"
+            options={payboxesQuery.data}
+            loading={payboxesQuery.isLoading}
+            value={payboxId}
+            onChange={setPayboxId}
+          />
 
-        <SelectField
-          id="paybox"
-          label="Счёт"
-          placeholder="Выберите счёт"
-          options={payboxesQuery.data}
-          loading={payboxesQuery.isLoading}
-          value={payboxId}
-          onChange={setPayboxId}
-        />
+          <SelectField
+            id="price_type"
+            label="Тип цен"
+            icon={<Package className="size-3.5" />}
+            placeholder="Выберите тип цен"
+            options={priceTypesQuery.data}
+            loading={priceTypesQuery.isLoading}
+            value={priceTypeId}
+            onChange={setPriceTypeId}
+          />
+        </SectionCard>
 
-        <SelectField
-          id="price_type"
-          label="Тип цен"
-          placeholder="Выберите тип цен"
-          options={priceTypesQuery.data}
-          loading={priceTypesQuery.isLoading}
-          value={priceTypeId}
-          onChange={setPriceTypeId}
-        />
-
-        <Separator />
-
-        <NomenclaturePicker
-          token={token}
-          priceTypeId={priceTypeId}
-          items={cart.items}
-          onAdd={cart.addItem}
-          onRemove={cart.removeItem}
-          onQtyChange={cart.updateQuantity}
-          onPriceChange={cart.updatePrice}
-        />
+        <SectionCard
+          step={3}
+          icon={<ShoppingBag className="size-4" />}
+          title="Товары"
+          description="Добавьте позиции в продажу"
+        >
+          <NomenclaturePicker
+            token={token}
+            priceTypeId={priceTypeId}
+            items={cart.items}
+            onAdd={cart.addItem}
+            onRemove={cart.removeItem}
+            onQtyChange={cart.updateQuantity}
+            onPriceChange={cart.updatePrice}
+          />
+        </SectionCard>
       </form>
 
       <OrderSummary

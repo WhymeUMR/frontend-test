@@ -29,10 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full bg-muted/30 flex flex-col">
+      <body className="min-h-full app-bg flex flex-col">
         <TokenProvider>
           <QueryProvider>
-            <div className="mx-auto w-full max-w-md min-h-screen bg-background shadow-sm flex flex-col">
+            <div className="mx-auto w-full max-w-md min-h-screen flex flex-col">
               {children}
             </div>
             <Toaster richColors position="top-center" />
