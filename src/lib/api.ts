@@ -155,11 +155,17 @@ export const api = {
     }).then(extractList<Nomenclature>);
   },
 
-  createSale(token: string, payload: CreateSalePayload) {
+  createSale(
+    token: string,
+    payload: CreateSalePayload,
+    options: { generateOut?: boolean } = {},
+  ) {
     // Эндпоинт принимает массив документов (CreateMass).
+    // generate_out=true — провести документ (списать товар, записать оплату).
     return request<unknown>("/docs_sales/", {
       method: "POST",
       token,
+      query: { generate_out: options.generateOut ? "true" : undefined },
       body: [payload],
     });
   },

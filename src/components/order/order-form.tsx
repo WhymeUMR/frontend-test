@@ -61,7 +61,9 @@ export function OrderForm() {
     setSubmitting(true);
     try {
       const payload = buildPayload();
-      await api.createSale(token, payload);
+      // Если "Создать и провести" — для проведения нужен статус=true.
+      if (generateOut) payload.status = true;
+      await api.createSale(token, payload, { generateOut });
       toast.success(
         generateOut ? "Продажа создана и проведена" : "Продажа создана",
       );
