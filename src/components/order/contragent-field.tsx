@@ -18,28 +18,29 @@ interface ContragentFieldProps {
   onChange: (value: Contragent | null) => void;
 }
 
+// Префикс "+7" всегда фиксирован, пользователь редактирует только 10 цифр после.
 function formatPhone(raw: string): string {
-  const digits = raw.replace(/\D/g, "").replace(/^8/, "7");
-  if (!digits) return "";
-  const d = digits.slice(0, 11);
-  const parts = [
-    d.slice(0, 1),
-    d.slice(1, 4),
-    d.slice(4, 7),
-    d.slice(7, 9),
-    d.slice(9, 11),
-  ].filter(Boolean);
-  let res = "+" + parts[0];
-  if (parts[1]) res += " (" + parts[1];
-  if (parts[1] && parts[1].length === 3) res += ")";
-  if (parts[2]) res += " " + parts[2];
-  if (parts[3]) res += "-" + parts[3];
-  if (parts[4]) res += "-" + parts[4];
+  // Убираем всё кроме цифр; первая 7/8 — это код страны, отбрасываем её,
+  // чтобы оставить только 10 цифр номера.
+  let digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("7") || digits.startsWith("8")) digits = digits.slice(1);
+  digits = digits.slice(0, 10);
+
+  let res = "+7";
+  if (digits.length > 0) res += " (" + digits.slice(0, 3);
+  if (digits.length >= 3) res += ")";
+  if (digits.length > 3) res += " " + digits.slice(3, 6);
+  if (digits.length > 6) res += "-" + digits.slice(6, 8);
+  if (digits.length > 8) res += "-" + digits.slice(8, 10);
   return res;
 }
 
+const EMPTY_PHONE = "+7";
+
 export function ContragentField({ token, value, onChange }: ContragentFieldProps) {
-  const [phone, setPhone] = useState(value?.phone ? formatPhone(value.phone) : "");
+  const [phone, setPhone] = useState(
+    value?.phone ? formatPhone(value.phone) : EMPTY_PHONE,
+  );
   const [focused, setFocused] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const debouncedPhone = useDebouncedValue(phone, 350);
@@ -61,7 +62,12 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
   }, []);
 
   const digits = useMemo(() => debouncedPhone.replace(/\D/g, ""), [debouncedPhone]);
-  const enabled = digits.length >= 4 && !value;
+  // Локальные цифры — без префикса "7".
+  const localDigits = useMemo(
+    () => (digits.startsWith("7") ? digits.slice(1) : digits),
+    [digits],
+  );
+  const enabled = localDigits.length >= 3 && !value;
 
   const { data, isFetching } = useQuery({
     queryKey: ["contragents", "search", digits],
@@ -79,7 +85,7 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
 
   const handleClear = () => {
     onChange(null);
-    setPhone("");
+    setPhone(EMPTY_PHONE);
   };
 
   const showResults = focused && enabled && (data?.length ?? 0) > 0;
@@ -158,9 +164,9 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
         <p className="text-xs text-muted-foreground">
           Выбран клиент: <span className="text-foreground">{value.name}</span>
         </p>
-      ) : digits.length > 0 && digits.length < 4 ? (
+      ) : localDigits.length > 0 && localDigits.length < 3 ? (
         <p className="text-xs text-muted-foreground">
-          Введите минимум 4 цифры для поиска
+          Введите минимум 3 цифры для поиска
         </p>
       ) : enabled && !isFetching && (data?.length ?? 0) === 0 ? (
         <p className="text-xs text-muted-foreground">
