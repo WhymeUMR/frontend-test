@@ -11,7 +11,6 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { resolvePrice, type CartItem } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
@@ -59,39 +58,44 @@ export function NomenclaturePicker({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label>
-          Товары
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[12px] font-medium text-muted-foreground">
           {items.length > 0 ? (
-            <Badge variant="secondary" className="ml-2">
-              {items.length}
-            </Badge>
-          ) : null}
-        </Label>
+            <span className="inline-flex items-center gap-1.5">
+              <span>Добавлено</span>
+              <Badge variant="secondary" className="px-1.5 py-0">
+                {items.length}
+              </Badge>
+            </span>
+          ) : (
+            "Номенклатура"
+          )}
+        </div>
         <Button
           type="button"
-          variant="outline"
+          variant={showSearch ? "secondary" : "default"}
           size="sm"
+          className="h-8"
           onClick={() => {
             setShowSearch((v) => !v);
             setTimeout(() => inputRef.current?.focus(), 80);
           }}
         >
-          <Search className="size-4 mr-1" />
-          Добавить товар
+          <Search className="size-3.5" />
+          {showSearch ? "Скрыть" : "Добавить"}
         </Button>
       </div>
 
       {showSearch ? (
-        <div className="rounded-lg border bg-muted/20 p-3 space-y-2">
+        <div className="rounded-xl border border-border/60 bg-muted/30 p-2.5 space-y-2">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
             <Input
               ref={inputRef}
-              placeholder="Поиск по названию..."
+              placeholder="Поиск по названию…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
+              className="pl-8 h-9 bg-background"
             />
             {isFetching ? (
               <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 animate-spin text-muted-foreground" />
@@ -106,25 +110,33 @@ export function NomenclaturePicker({
                 <li
                   key={n.id}
                   className={cn(
-                    "flex items-center justify-between gap-2 rounded-md px-2 py-2 text-sm",
-                    inCart ? "bg-primary/5" : "hover:bg-accent",
+                    "flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-sm transition-colors",
+                    inCart ? "bg-primary/8" : "bg-background hover:bg-accent",
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate">{n.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {price > 0 ? `${price.toLocaleString("ru-RU")} ₽` : "Цена не указана"}
-                      {n.unit_name ? ` / ${n.unit_name}` : ""}
+                    <div className="font-medium truncate text-[13px]">{n.name}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5">
+                      {price > 0 ? (
+                        <span className="text-foreground/80 font-medium">
+                          {price.toLocaleString("ru-RU")} ₽
+                        </span>
+                      ) : (
+                        "Цена не указана"
+                      )}
+                      {n.unit_name ? (
+                        <span className="text-muted-foreground"> / {n.unit_name}</span>
+                      ) : null}
                     </div>
                   </div>
                   <Button
                     type="button"
                     size="sm"
                     variant={inCart ? "secondary" : "default"}
-                    className="shrink-0 h-7 px-2"
+                    className="shrink-0 h-8 px-2.5"
                     onClick={() => handleAdd(n)}
                   >
-                    <Plus className="size-3.5 mr-1" />
+                    <Plus className="size-3.5" />
                     {inCart ? "Ещё" : "Добавить"}
                   </Button>
                 </li>
@@ -141,7 +153,7 @@ export function NomenclaturePicker({
 
       {items.length > 0 ? (
         <>
-          <Separator />
+          {showSearch ? <Separator /> : null}
           <div className="space-y-2">
             {items.map((item) => (
               <CartRow
@@ -154,10 +166,11 @@ export function NomenclaturePicker({
             ))}
           </div>
         </>
-      ) : (
-        <div className="flex flex-col items-center gap-1 py-6 text-muted-foreground">
-          <ShoppingCart className="size-8 opacity-30" />
-          <p className="text-sm">Товары не добавлены</p>
+      ) : showSearch ? null : (
+        <div className="flex flex-col items-center gap-1.5 py-6 rounded-xl border border-dashed border-border/70 bg-muted/20 text-muted-foreground">
+          <ShoppingCart className="size-7 opacity-40" />
+          <p className="text-[12.5px]">Товары не добавлены</p>
+          <p className="text-[11px] text-muted-foreground/80">Нажмите «Добавить» выше</p>
         </div>
       )}
     </div>
@@ -176,32 +189,46 @@ function CartRow({ item, onQtyChange, onPriceChange, onRemove }: CartRowProps) {
   const lineTotal = item.price * item.quantity;
 
   return (
-    <div className="rounded-lg border bg-background p-3 space-y-2">
+    <div className="rounded-xl border border-border/70 bg-background p-3 space-y-2.5">
       <div className="flex items-start justify-between gap-2">
-        <span className="text-sm font-medium leading-snug flex-1">
-          {item.nomenclature.name}
-        </span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-          onClick={() => onRemove(id)}
-          aria-label="Удалить товар"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <div className="min-w-0 flex-1">
+          <div className="text-[13px] font-medium leading-snug">
+            {item.nomenclature.name}
+          </div>
+          {item.nomenclature.unit_name ? (
+            <div className="text-[10.5px] text-muted-foreground mt-0.5">
+              {item.nomenclature.unit_name}
+            </div>
+          ) : null}
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          <span className="text-[15px] font-semibold tabular-nums">
+            {lineTotal.toLocaleString("ru-RU", { maximumFractionDigits: 2 })}
+            <span className="text-muted-foreground text-[12px] ml-0.5">₽</span>
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground hover:text-destructive"
+            onClick={() => onRemove(id)}
+            aria-label="Удалить товар"
+          >
+            <Trash2 className="size-3.5" />
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
         {/* Количество */}
-        <div className="flex items-center gap-1">
+        <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-0.5">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="size-7"
+            className="size-7 hover:bg-background"
             onClick={() => onQtyChange(id, item.quantity - 1)}
+            aria-label="Уменьшить"
           >
             <Minus className="size-3" />
           </Button>
@@ -215,14 +242,15 @@ function CartRow({ item, onQtyChange, onPriceChange, onRemove }: CartRowProps) {
               const v = parseFloat(e.target.value);
               if (!isNaN(v) && v > 0) onQtyChange(id, v);
             }}
-            className="h-7 w-14 text-center text-sm px-1"
+            className="h-7 w-12 text-center text-[12.5px] px-1 border-0 shadow-none bg-transparent focus-visible:ring-0"
           />
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="size-7"
+            className="size-7 hover:bg-background"
             onClick={() => onQtyChange(id, item.quantity + 1)}
+            aria-label="Увеличить"
           >
             <Plus className="size-3" />
           </Button>
@@ -242,19 +270,11 @@ function CartRow({ item, onQtyChange, onPriceChange, onRemove }: CartRowProps) {
               const v = parseFloat(e.target.value);
               if (!isNaN(v) && v >= 0) onPriceChange(id, v);
             }}
-            className="h-7 text-sm pr-5"
+            className="h-8 text-[12.5px] pr-6 bg-background"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground pointer-events-none">
             ₽
           </span>
-        </div>
-
-        {/* Итого по строке */}
-        <div className="text-sm font-medium text-right w-20 shrink-0">
-          {lineTotal.toLocaleString("ru-RU", {
-            maximumFractionDigits: 2,
-          })}{" "}
-          ₽
         </div>
       </div>
     </div>

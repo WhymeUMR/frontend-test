@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, KeyRound, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,21 +20,22 @@ export function TokenForm() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="space-y-2">
-        <Label htmlFor="token" className="text-sm font-medium">
+        <Label htmlFor="token" className="text-[12px] font-medium text-muted-foreground">
           Токен кассы
         </Label>
         <div className="relative">
+          <KeyRound className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/70" />
           <Input
             id="token"
             type={show ? "text" : "password"}
             autoComplete="off"
             spellCheck={false}
-            placeholder="Введите токен..."
+            placeholder="Введите токен…"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="pr-10 h-10"
+            className="pl-9 pr-10 h-11"
           />
           <button
             type="button"
@@ -45,15 +46,16 @@ export function TokenForm() {
             {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground">
           Токен сохраняется только в этом браузере (localStorage).
         </p>
       </div>
       <Button
         type="submit"
         disabled={!value.trim()}
-        className="h-10 text-sm font-medium"
+        className="h-11 text-sm font-medium"
       >
+        <LogIn className="size-4" />
         Войти
       </Button>
     </form>

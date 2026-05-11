@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { clearToken, getToken, setToken } from "@/lib/token";
+import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
+import { clearToken as clearStoredToken, getToken, setToken as setStoredToken } from "@/lib/token";
 
 interface TokenContextValue {
   token: string | null;
@@ -12,31 +12,63 @@ interface TokenContextValue {
 
 const TokenContext = createContext<TokenContextValue | null>(null);
 
+// localStorage — внешний источник состояния, поэтому используем useSyncExternalStore.
+// Это решает SSR-гидрацию без setState внутри useEffect.
+const TOKEN_STORAGE_KEY = "tablecrm.token";
+
+function subscribeToken(callback: () => void) {
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === TOKEN_STORAGE_KEY) callback();
+  };
+  window.addEventListener("storage", onStorage);
+  window.addEventListener("tablecrm:token-change", callback);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener("tablecrm:token-change", callback);
+  };
+}
+
+function getTokenSnapshot(): string | null {
+  return getToken();
+}
+
+function getServerTokenSnapshot(): string | null {
+  return null;
+}
+
+function subscribeNoop() {
+  return () => {};
+}
+
+function getReadyClient(): boolean {
+  return true;
+}
+
+function getReadyServer(): boolean {
+  return false;
+}
+
 export function TokenProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setTokenState(getToken());
-    setReady(true);
-
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "tablecrm.token") {
-        setTokenState(e.newValue);
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  const token = useSyncExternalStore(
+    subscribeToken,
+    getTokenSnapshot,
+    getServerTokenSnapshot,
+  );
+  // ready переходит в true после первой клиентской re-render — после гидрации.
+  const ready = useSyncExternalStore(
+    subscribeNoop,
+    getReadyClient,
+    getReadyServer,
+  );
 
   const save = useCallback((value: string) => {
-    setToken(value);
-    setTokenState(value.trim());
+    setStoredToken(value);
+    window.dispatchEvent(new Event("tablecrm:token-change"));
   }, []);
 
   const reset = useCallback(() => {
-    clearToken();
-    setTokenState(null);
+    clearStoredToken();
+    window.dispatchEvent(new Event("tablecrm:token-change"));
   }, []);
 
   return (

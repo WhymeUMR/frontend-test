@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, Phone, UserCheck, X } from "lucide-react";
 
 import { api } from "@/lib/api";
 import type { Contragent } from "@/lib/api-types";
@@ -93,8 +93,11 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
 
   return (
     <div className="space-y-2" ref={wrapRef}>
-      <Label htmlFor="phone">Телефон клиента</Label>
+      <Label htmlFor="phone" className="text-[12px] font-medium text-muted-foreground">
+        Телефон клиента
+      </Label>
       <div className="relative">
+        <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/70" />
         <Input
           id="phone"
           type="tel"
@@ -112,7 +115,7 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
             // Если пользователь не ввёл ни одной цифры — возвращаем placeholder.
             if (phone === EMPTY_PHONE) setPhone("");
           }}
-          className="pr-9"
+          className="pl-9 pr-9 h-10 bg-background"
         />
         <div className="absolute inset-y-0 right-2 flex items-center text-muted-foreground">
           {isFetching ? (
@@ -170,18 +173,26 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
       </div>
 
       {value ? (
-        <p className="text-xs text-muted-foreground">
-          Выбран клиент: <span className="text-foreground">{value.name}</span>
-        </p>
+        <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700 ring-1 ring-emerald-200/70">
+          <UserCheck className="size-3.5 shrink-0" />
+          <span className="min-w-0 truncate">
+            <span className="font-medium">{value.name || "Без имени"}</span>
+            <span className="text-emerald-700/70"> · клиент найден</span>
+          </span>
+        </div>
       ) : localDigits.length > 0 && localDigits.length < 3 ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground">
           Введите минимум 3 цифры для поиска
         </p>
       ) : enabled && !isFetching && (data?.length ?? 0) === 0 ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground">
           Клиент не найден — продажа будет без клиента
         </p>
-      ) : null}
+      ) : (
+        <p className="text-[11px] text-muted-foreground">
+          Поиск начнётся после ввода 3-х цифр номера
+        </p>
+      )}
     </div>
   );
 }
