@@ -1,25 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import { QueryProvider } from "@/components/query-provider";
 import { TokenProvider } from "@/components/token-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin", "cyrillic"],
 });
 
 export const metadata: Metadata = {
-  title: "Оформление заказа",
-  description: "Мобильная форма оформления заказа",
+  title: "TableCRM — Оформление заказа",
+  description: "Мобильная форма оформления заказа TableCRM",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#6163ff",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="ru" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-muted/30 flex flex-col">
         <TokenProvider>
           <QueryProvider>

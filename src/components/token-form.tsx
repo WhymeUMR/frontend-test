@@ -20,9 +20,11 @@ export function TokenForm() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5">
       <div className="space-y-2">
-        <Label htmlFor="token">Токен кассы</Label>
+        <Label htmlFor="token" className="text-sm font-medium">
+          Токен кассы
+        </Label>
         <div className="relative">
           <Input
             id="token"
@@ -32,13 +34,13 @@ export function TokenForm() {
             placeholder="Введите токен..."
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="pr-10"
+            className="pr-10 h-10"
           />
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 size-7 text-muted-foreground"
+            className="absolute right-1 top-1/2 -translate-y-1/2 size-8 text-muted-foreground"
             onClick={() => setShow((v) => !v)}
             aria-label={show ? "Скрыть токен" : "Показать токен"}
           >
@@ -49,7 +51,11 @@ export function TokenForm() {
           Токен сохраняется только в этом браузере (localStorage).
         </p>
       </div>
-      <Button type="submit" disabled={!value.trim()}>
+      <Button
+        type="submit"
+        disabled={!value.trim()}
+        className="h-10 text-sm font-medium"
+      >
         Войти
       </Button>
     </form>
