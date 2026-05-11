@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToken } from "@/components/token-provider";
@@ -12,27 +13,14 @@ export function OrderScreen() {
     <main className="flex-1 flex flex-col">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/60 px-4 py-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 32 32"
-            fill="none"
-            className="text-primary shrink-0"
-          >
-            <path
-              d="M6 16C6 10.477 10.477 6 16 6s10 4.477 10 10-4.477 10-10 10"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-            <path
-              d="M10 17l4 4 8-10"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Image
+            src="/logo.svg"
+            alt="TableCRM"
+            width={22}
+            height={22}
+            priority
+            className="shrink-0"
+          />
           <div>
             <h1 className="text-sm font-semibold leading-tight">
               Новый заказ

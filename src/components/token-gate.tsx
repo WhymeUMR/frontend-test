@@ -1,35 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useToken } from "@/components/token-provider";
 import { TokenForm } from "./token-form";
 import { Skeleton } from "./ui/skeleton";
-
-function TableCRMLogo({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 16C6 10.477 10.477 6 16 6s10 4.477 10 10-4.477 10-10 10"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 17l4 4 8-10"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export function TokenGate({ children }: { children: React.ReactNode }) {
   const { token, ready } = useToken();
@@ -50,7 +24,7 @@ export function TokenGate({ children }: { children: React.ReactNode }) {
       <main className="flex-1 flex flex-col">
         <header className="px-4 pt-10 pb-6 text-center">
           <div className="inline-flex items-center gap-2 mb-3">
-            <TableCRMLogo className="text-primary" />
+            <Image src="/logo.svg" alt="TableCRM" width={32} height={32} priority />
             <span className="text-xl font-semibold tracking-tight">
               TableCRM
             </span>
