@@ -50,15 +50,24 @@ export function SelectField({
         </div>
       ) : (
         <Select
-          value={value ?? undefined}
-          onValueChange={(v) => onChange(typeof v === "number" ? v : null)}
+          value={value === null ? "" : String(value)}
+          onValueChange={(v) => {
+            const n = Number(v);
+            onChange(Number.isFinite(n) && n > 0 ? n : null);
+          }}
         >
           <SelectTrigger id={id} size="default" className="w-full">
-            <SelectValue placeholder={placeholder} />
+            <SelectValue placeholder={placeholder}>
+              {(v) => {
+                if (!v) return placeholder;
+                const found = (options ?? []).find((o) => String(o.id) === v);
+                return found?.name ?? placeholder;
+              }}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {(options ?? []).map((o) => (
-              <SelectItem key={o.id} value={o.id}>
+              <SelectItem key={o.id} value={String(o.id)}>
                 {o.name}
               </SelectItem>
             ))}

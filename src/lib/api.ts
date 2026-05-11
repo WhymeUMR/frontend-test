@@ -105,7 +105,18 @@ export const api = {
       token,
       query: { limit: 100 },
       signal,
-    }).then(extractList<Organization>);
+    }).then((data) =>
+      extractList<Record<string, unknown>>(data).map((o) => ({
+        id: o.id as number,
+        // У организаций нет единого поля name — склеиваем из доступных.
+        name:
+          (o.short_name as string) ||
+          (o.work_name as string) ||
+          (o.full_name as string) ||
+          (o.type as string) ||
+          `Организация #${o.id}`,
+      })) as Organization[],
+    );
   },
 
   warehouses(token: string, signal?: AbortSignal) {
