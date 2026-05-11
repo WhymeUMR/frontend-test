@@ -1,6 +1,6 @@
 "use client";
 
-import { useToken } from "@/hooks/use-token";
+import { useToken } from "@/components/token-provider";
 import { TokenForm } from "./token-form";
 import { Skeleton } from "./ui/skeleton";
 

@@ -2,7 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToken } from "@/hooks/use-token";
+import { useToken } from "@/components/token-provider";
 import { OrderForm } from "@/components/order/order-form";
 
 export function OrderScreen() {

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import type { Contragent, CreateSalePayload } from "@/lib/api-types";
 import { api } from "@/lib/api";
-import { useToken } from "@/hooks/use-token";
+import { useToken } from "@/components/token-provider";
 import {
   useOrganizations,
   usePayboxes,

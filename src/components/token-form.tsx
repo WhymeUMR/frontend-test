@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToken } from "@/hooks/use-token";
+import { useToken } from "@/components/token-provider";
 
 export function TokenForm() {
   const { setToken } = useToken();
