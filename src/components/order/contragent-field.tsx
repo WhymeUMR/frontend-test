@@ -36,10 +36,11 @@ function formatPhone(raw: string): string {
 }
 
 const EMPTY_PHONE = "+7";
+const PHONE_PLACEHOLDER = "+7 (___) ___-__-__";
 
 export function ContragentField({ token, value, onChange }: ContragentFieldProps) {
   const [phone, setPhone] = useState(
-    value?.phone ? formatPhone(value.phone) : EMPTY_PHONE,
+    value?.phone ? formatPhone(value.phone) : "",
   );
   const [focused, setFocused] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -85,7 +86,7 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
 
   const handleClear = () => {
     onChange(null);
-    setPhone(EMPTY_PHONE);
+    setPhone(focused ? EMPTY_PHONE : "");
   };
 
   const showResults = focused && enabled && (data?.length ?? 0) > 0;
@@ -99,10 +100,18 @@ export function ContragentField({ token, value, onChange }: ContragentFieldProps
           type="tel"
           inputMode="tel"
           autoComplete="off"
-          placeholder="+7 (___) ___-__-__"
+          placeholder={PHONE_PLACEHOLDER}
           value={phone}
           onChange={(e) => setPhone(formatPhone(e.target.value))}
-          onFocus={() => setFocused(true)}
+          onFocus={() => {
+            setFocused(true);
+            // При фокусе на пустое поле — подставляем "+7", чтобы префикс был зафиксирован.
+            if (!phone) setPhone(EMPTY_PHONE);
+          }}
+          onBlur={() => {
+            // Если пользователь не ввёл ни одной цифры — возвращаем placeholder.
+            if (phone === EMPTY_PHONE) setPhone("");
+          }}
           className="pr-9"
         />
         <div className="absolute inset-y-0 right-2 flex items-center text-muted-foreground">
