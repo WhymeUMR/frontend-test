@@ -36,16 +36,14 @@ export function TokenForm() {
             onChange={(e) => setValue(e.target.value)}
             className="pr-10 h-10"
           />
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 size-8 text-muted-foreground"
+            className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => setShow((v) => !v)}
             aria-label={show ? "Скрыть токен" : "Показать токен"}
           >
             {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-          </Button>
+          </button>
         </div>
         <p className="text-xs text-muted-foreground">
           Токен сохраняется только в этом браузере (localStorage).
