@@ -23,7 +23,7 @@ export function OrderSummary({
   onCreateAndPost,
 }: OrderSummaryProps) {
   return (
-    <div className="fixed bottom-0 inset-x-0 z-20 mx-auto w-full max-w-md bg-background border-t shadow-lg">
+    <div className="fixed bottom-0 inset-x-0 z-20 mx-auto w-full max-w-md bg-background/95 backdrop-blur-md border-t border-border/60 shadow-lg">
       <div className="px-4 pt-3 pb-safe-or-3 space-y-3">
         {items.length > 0 ? (
           <>
@@ -32,7 +32,7 @@ export function OrderSummary({
                 Товаров: {items.length} поз. /{" "}
                 {items.reduce((a, i) => a + i.quantity, 0)} шт.
               </span>
-              <span className="font-semibold text-base">
+              <span className="font-semibold text-base text-foreground">
                 {total.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} ₽
               </span>
             </div>
@@ -44,7 +44,7 @@ export function OrderSummary({
           <Button
             type="button"
             variant="outline"
-            className="flex-1"
+            className="flex-1 h-9"
             disabled={!canSubmit || submitting}
             onClick={onCreateSale}
           >
@@ -56,7 +56,7 @@ export function OrderSummary({
 
           <Button
             type="button"
-            className="flex-1"
+            className="flex-1 h-9"
             disabled={!canSubmit || submitting}
             onClick={onCreateAndPost}
           >
