@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useToken } from "@/hooks/use-token";
+import { OrderForm } from "@/components/order/order-form";
 
 export function OrderScreen() {
   const { clearToken } = useToken();
@@ -26,9 +27,7 @@ export function OrderScreen() {
         </Button>
       </header>
 
-      <div className="text-sm text-muted-foreground">
-        Скоро здесь появится форма.
-      </div>
+      <OrderForm />
     </main>
   );
 }
