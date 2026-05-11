@@ -63,10 +63,17 @@ export function OrderForm() {
       const payload = buildPayload();
       // Если "Создать и провести" — для проведения нужен статус=true.
       if (generateOut) payload.status = true;
-      await api.createSale(token, payload, { generateOut });
-      toast.success(
-        generateOut ? "Продажа создана и проведена" : "Продажа создана",
-      );
+      const res = (await api.createSale(token, payload, { generateOut })) as
+        | { id?: number }[]
+        | { id?: number }
+        | null;
+      const createdId = Array.isArray(res) ? res[0]?.id : res?.id;
+      const title = generateOut
+        ? "Продажа создана и проведена"
+        : "Продажа создана";
+      toast.success(title, {
+        description: createdId ? `ID: ${createdId}` : undefined,
+      });
       // Сброс формы после успешного создания.
       cart.clearCart();
       setContragent(null);
