@@ -9,7 +9,9 @@ import {
   usePriceTypes,
   useWarehouses,
 } from "@/hooks/use-references";
+import { useCart } from "@/hooks/use-cart";
 import { ContragentField } from "./contragent-field";
+import { NomenclaturePicker } from "./nomenclature-picker";
 import { SelectField } from "./select-field";
 import { Separator } from "@/components/ui/separator";
 
@@ -26,6 +28,7 @@ export function OrderForm() {
   const warehousesQuery = useWarehouses(token!);
   const payboxesQuery = usePayboxes(token!);
   const priceTypesQuery = usePriceTypes(token!);
+  const cart = useCart();
 
   if (!token) return null;
 
@@ -78,6 +81,18 @@ export function OrderForm() {
         loading={priceTypesQuery.isLoading}
         value={priceTypeId}
         onChange={setPriceTypeId}
+      />
+
+      <Separator />
+
+      <NomenclaturePicker
+        token={token}
+        priceTypeId={priceTypeId}
+        items={cart.items}
+        onAdd={cart.addItem}
+        onRemove={cart.removeItem}
+        onQtyChange={cart.updateQuantity}
+        onPriceChange={cart.updatePrice}
       />
     </form>
   );
