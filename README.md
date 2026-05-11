@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# tablecrm mobile order form
 
-## Getting Started
+Мобильная форма создания продажи для [tablecrm.com](https://tablecrm.com).
 
-First, run the development server:
+## Стек
+
+- **Next.js 16** (App Router, TypeScript)
+- **Tailwind CSS v4**
+- **shadcn/ui** (base-ui компоненты)
+- **TanStack Query v5** — кеширование запросов к API
+- **Sonner** — toast-уведомления
+- **Bun** — менеджер пакетов и рантайм
+
+## Функциональность
+
+| Раздел | Описание |
+|---|---|
+| Токен | Ввод и сохранение токена кассы в localStorage |
+| Клиент | Поиск контрагента по номеру телефона (debounce 350 мс) |
+| Организация | Выбор из списка (обязательное поле) |
+| Склад | Выбор из списка |
+| Счёт (касса) | Выбор из списка |
+| Тип цен | Выбор типа — автоматически подставляется в цены товаров |
+| Товары | Поиск по номенклатуре, добавление в корзину, редактирование количества и цены |
+| Итого | Фиксированная панель с суммой и кнопками |
+| Создать продажу | POST `/docs_sales/?token=...` с `generate_out=false` |
+| Создать и провести | POST `/docs_sales/?token=...` с `generate_out=true` |
+
+## Локальный запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Открыть: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Деплой на Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Залить репозиторий на GitHub
+2. Импортировать в [vercel.com](https://vercel.com) → «Import Project»
+3. Framework Preset: **Next.js** (определяется автоматически)
+4. Нажать **Deploy** — переменные окружения не нужны, токен хранится в браузере
 
-## Learn More
+## Структура проекта
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── layout.tsx          # Root layout: мобильный контейнер, Toaster, QueryProvider
+│   └── page.tsx            # Entry: TokenGate → OrderScreen
+├── components/
+│   ├── order/
+│   │   ├── order-form.tsx          # Основная форма заказа
+│   │   ├── contragent-field.tsx    # Поле телефона + поиск клиента
+│   │   ├── select-field.tsx        # Универсальный Select с лоадером
+│   │   ├── nomenclature-picker.tsx # Поиск товаров + корзина
+│   │   └── order-summary.tsx       # Нижняя панель: итого + кнопки
+│   ├── token-form.tsx      # Форма ввода токена
+│   ├── token-gate.tsx      # Гард: показывает форму токена, если не авторизован
+│   ├── order-screen.tsx    # Экран заказа со sticky-шапкой
+│   └── query-provider.tsx  # TanStack Query Provider
+├── hooks/
+│   ├── use-token.ts            # Хранение токена в localStorage
+│   ├── use-references.ts       # Хуки для справочников (org, warehouse, paybox, etc.)
+│   ├── use-cart.ts             # Управление корзиной товаров
+│   └── use-debounced-value.ts  # Debounce хук
+└── lib/
+    ├── api.ts          # HTTP-клиент для tablecrm API
+    ├── api-types.ts    # TypeScript типы сущностей
+    ├── token.ts        # Утилиты localStorage
+    └── utils.ts        # cn() и прочее
+```
